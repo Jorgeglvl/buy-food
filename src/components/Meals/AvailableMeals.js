@@ -1,6 +1,8 @@
 import styles from "./AvailableMeals.module.css";
 import Card from "../UI/Card";
 import MealItem from "./MealItem/MealItem";
+import useHttp from "../../hooks/use-http";
+import { useEffect } from "react";
 
 const DUMMY_MEALS = [
   {
@@ -30,6 +32,14 @@ const DUMMY_MEALS = [
 ];
 
 const AvailableMeals = () => {
+  const { isLoading, error, sendRequest } = useHttp();
+
+  const formatMeals = () => {};
+
+  useEffect(() => {
+    sendRequest("https://react-http-e7870-default-rtdb.firebaseio.com/meals.json", formatMeals);
+  }, [sendRequest]);
+  
   const mealsList = DUMMY_MEALS.map((meal) => (
     <li>
       <MealItem
@@ -41,10 +51,12 @@ const AvailableMeals = () => {
       />
     </li>
   ));
+
+  const display = isLoading ? (<h2>Loading...</h2>) : error ? (<h2>{error}</h2>) : mealsList;
   return (
     <section className={styles.meals}>
       <Card>
-        <ul>{mealsList}</ul>
+        <ul>{display}</ul>
       </Card>
     </section>
   );

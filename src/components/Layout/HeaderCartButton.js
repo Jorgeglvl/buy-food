@@ -18,8 +18,10 @@ const HeaderCartButton = (props) => {
 
   const btnStyles = `${styles.button} ${btnBump ? styles.bump : ''}`;
 
+  const itemsListLength = cartCtx.items.length;
+
   useEffect(() => {
-      if (cartCtx.items.length === 0) {
+      if (itemsListLength === 0) {
           return;
       }
     setBtnBump(true);
@@ -30,7 +32,7 @@ const HeaderCartButton = (props) => {
     return () => {
         clearTimeout(timer);
     };
-  }, [items]);
+  }, [itemsListLength]);
 
   return (
     <button className={btnStyles} onClick={onClickHandler}>
