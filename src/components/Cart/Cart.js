@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { Fragment, useContext, useState } from "react";
 import CartContext from "../../context/cart-context";
 import Modal from "../UI/Modal";
 import CartItem from "./CartItem";
@@ -9,6 +9,7 @@ import useHttp from "../../hooks/use-http";
 const Cart = (props) => {
   const cartCtx = useContext(CartContext);
   const [displayCheckout, setDispleyCheckout] = useState(false);
+  const [success, setSuccess] = useState(false);
   const { isLoading, error, sendRequest } = useHttp();
 
   const totalAmount = `$${cartCtx.totalAmount.toFixed(2)}`;
@@ -47,10 +48,13 @@ const Cart = (props) => {
 
   const modalActions = (
     <div className={styles.actions}>
-      <button className={styles["button--alt"]} onClick={cancelHandler}>
+      {!success && <button className={styles["button--alt"]} onClick={cancelHandler}>
         Cancel
-      </button>
-      {hasItems && !error && (
+      </button>}
+      {success && <button className={styles.button} onClick={cancelHandler}>
+          Confirm
+        </button>}
+      {hasItems && !error && !success && (
         <button className={styles.button} onClick={displayCheckoutHandler}>
           Order
         </button>
@@ -77,16 +81,23 @@ const Cart = (props) => {
     );
     cartCtx.reset();
     setDispleyCheckout(false);
+    setSuccess(true);
   };
 
   const content = isLoading ? (
     <h2>Loading...</h2>
   ) : error ? (
-    <div>
+    <Fragment>
       <h2>{error}</h2>
       {modalActions}
-    </div>
-  ) : (
+    </Fragment>
+  ) : success ?   (
+    <Fragment>
+    <h2>Order send successfully!</h2>
+    {modalActions}
+  </Fragment>
+  )
+  :  (
     <section>
       {cartItems}
       <div className={styles.total}>
